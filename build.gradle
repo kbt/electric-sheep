@@ -8,20 +8,17 @@ repositories {
   jcenter()
 }
 
-mainClassName = "Main"
+mainClassName = "net.kbt.esheep.Main"
 
 ext {
-  vertxVersion = "3.5.0"
+  vertxVer = "3.5.0"
+  logbackVer = "1.2.3"
 }
 
 dependencies {
-  runtime "org.slf4j:slf4j-simple:1.7.12"
-
-  compile "io.vertx:vertx-core:$vertxVersion"
-  compile "io.vertx:vertx-web:$vertxVersion"
-
-  compile "org.postgresql:postgresql:9.4-1201-jdbc4"
-  testCompile 'junit:junit:4.11'
+  compile "ch.qos.logback:logback-classic:$logbackVer"
+  compile "io.vertx:vertx-core:$vertxVer"
+  compile "io.vertx:vertx-web:$vertxVer"
 }
 
 task stage {
