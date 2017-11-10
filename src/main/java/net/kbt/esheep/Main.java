@@ -2,15 +2,11 @@ package net.kbt.esheep;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
-import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
   private final static Logger logger;
@@ -26,29 +22,10 @@ public class Main {
   public static void main(String... args) throws Exception {
     Vertx vertx = Vertx.vertx();
 
-    ZonedDateTime upTime = ZonedDateTime.now();
+    Runtime.getRuntime().addShutdownHook(getShutdownThread());
 
     HttpServer server = vertx.createHttpServer();
-
-    AtomicInteger calls = new AtomicInteger();
-    server.requestHandler(request -> {
-
-      long duration = Duration.between(upTime, ZonedDateTime.now())
-          .toMinutes();
-
-      String body =
-          String.format("Up since: %s (%d minutes)\nCalls: %d\n",
-              upTime.format(DateTimeFormatter.ISO_DATE_TIME),
-              duration,
-              calls.incrementAndGet());
-
-      logger.info("{} request from {}", request.rawMethod(), request.remoteAddress().host());
-
-      HttpServerResponse response = request.response();
-      response
-          .putHeader("Content-type", "text/plain")
-          .end(body);
-    });
+    server.requestHandler(new RequestHandler(ZonedDateTime.now()));
 
     int port = Optional.ofNullable(System.getProperty("server.port"))
         .map(Integer::valueOf)
@@ -61,5 +38,9 @@ public class Main {
         logger.error("App start failed", result.cause());
       }
     });
+  }
+
+  private static Thread getShutdownThread() {
+    return new Thread(() -> logger.info("App shutdown triggered"));
   }
 }
