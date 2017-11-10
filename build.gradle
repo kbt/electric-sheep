@@ -1,5 +1,7 @@
 plugins {
-  id "io.ratpack.ratpack-groovy" version "1.4.5"
+  id "java"
+  id "application"
+  id "com.github.johnrengelman.shadow" version "2.0.1"
 }
 
 repositories {
@@ -8,13 +10,20 @@ repositories {
 
 mainClassName = "Main"
 
+ext {
+  vertxVersion = "3.5.0"
+}
+
 dependencies {
   runtime "org.slf4j:slf4j-simple:1.7.12"
-  compile "com.heroku.sdk:heroku-jdbc:0.1.1"
+
+  compile "io.vertx:vertx-core:$vertxVersion"
+  compile "io.vertx:vertx-web:$vertxVersion"
+
   compile "org.postgresql:postgresql:9.4-1201-jdbc4"
   testCompile 'junit:junit:4.11'
 }
 
 task stage {
-  dependsOn installDist
+  dependsOn shadowJar
 }
